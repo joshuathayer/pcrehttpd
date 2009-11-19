@@ -1,0 +1,35 @@
+
+
+
+ul.itemList { list-style-type: none; margin-left: 0em; padding-left: 0em; }
+li.itemLine { margin-bottom: 0.45em; }
+
+.searchBox {
+	font-weight:normal; font-family:Georgia, "Times New Roman", serif; letter-spacing: 0px; word-spacing:0.1em;
+	border: 1px solid #999;
+	padding: 3px;
+	height: 1.7em;
+	display: inline;
+	margin-bottom: 1.5em;
+	width: 30em;
+	font-size: 1.5em;
+}
+
+.floatLeft {
+	float: left;
+}
+
+.inline {
+	display: inline;
+}
+
+.selecta {
+	padding: 2px;
+	border-bottom: 1px dashed #999;
+	background-color: #aff;
+}
+
+.bordered {
+	border: 1px dashed #999;
+}
+
