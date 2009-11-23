@@ -176,7 +176,7 @@ sub message {
 				method => $meth,
 				url => $url,
 				params => \%params,
-				heraders => $headers,
+				headers => $headers,
 				cookies => $cookies,
 				pcre_session => $session,
 				server => $self,
@@ -185,10 +185,7 @@ sub message {
 			my ($code,$str,$headers,$cont);
 
 			eval {
-				# indirectly call the proper method on the pcre app's class
-				# see http://docstore.mik.ua/orelly/perl/cookbook/ch13_08.htm
-				# and http://perldoc.perl.org/strict.html
-				$instance->$f($context, sub {
+				$context->{_pcrehttpd_cb} = sub {
 					# callback from our app to the user
 					# here we massage what we're going to send back to the user,
 					# fix up our session, etc
@@ -204,14 +201,20 @@ sub message {
 					}
 
 					$responses->{$fh} = [$code, $str, $headers, $cont];
-					#print "httpd $code $str $cont\n";
-					#print Dumper $responses;
 					$self->{client_callback}->([$fh]);	
-				}, sub {
+				};
+
+				$context->{_pcrehttpd_app_log} = sub {
 					# logging callback for our app
 					my $dat = shift;
 					$self->{applog}->log($fh, $dat);
-				});
+				};
+
+				# actually make the call
+				# indirectly call the proper method on the pcre app's class
+				# see http://docstore.mik.ua/orelly/perl/cookbook/ch13_08.htm
+				# and http://perldoc.perl.org/strict.html
+				$instance->$f($context);
 			};
 
 			if ($! or $@) {
