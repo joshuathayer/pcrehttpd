@@ -4,8 +4,6 @@ use strict;
 # create a new pcrehttp user
 # makes one (1) active user with password authentication and zero grants
 
-use lib ('/Users/joshua/projects/pcrehttpd/lib/');
-
 # TODO add flags: -force (check for extant user before adding new one!)
 if (scalar(@ARGV) < 3) {
 	print "USAGE: $0 kvd_config_file username password\n";

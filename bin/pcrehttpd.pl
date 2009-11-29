@@ -1,8 +1,6 @@
 #!/usr/bin/perl
 
 use strict;
-use lib ('/Users/joshua/projects/sisyphus/lib');
-use lib ('/Users/joshua/projects/pcrehttpd/lib');
 
 use Sisyphus::Listener;
 use Sisyphus::Proto::HTTP;

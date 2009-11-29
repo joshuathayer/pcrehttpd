@@ -3,8 +3,6 @@ use strict;
 
 # dump everything i know about a user
 
-use lib ('/Users/joshua/projects/pcrehttpd/lib/');
-
 # TODO add flags: -force (check for extant user before adding new one!)
 if (scalar(@ARGV) < 2) {
 	print "USAGE: $0 kvd_config_file username\n";
