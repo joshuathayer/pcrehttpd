@@ -1,7 +1,7 @@
 use inc::Module::Install;
 
 name     'pcrehttpd';
-all_from 'lib/PCREHTTPD.pm';
+all_from 'lib/PCREHTTPD/PCREHTTPD.pm';
 author   'Joshua Thayer <joshuamilesthayer@gmail.com>';
 
 build_requires 'Test::More';

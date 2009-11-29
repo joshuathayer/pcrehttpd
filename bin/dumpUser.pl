@@ -9,9 +9,9 @@ if (scalar(@ARGV) < 2) {
 	exit;
 }
 
-use PCREUser; 
+use PCREHTTPD::PCREUser; 
 use MyKVClient;
-use PasswordAuth;
+use PCREHTTPD::PasswordAuth;
 use Data::Dumper;
 use AnyEvent;
 

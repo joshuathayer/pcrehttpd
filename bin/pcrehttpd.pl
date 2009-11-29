@@ -5,7 +5,7 @@ use strict;
 use Sisyphus::Listener;
 use Sisyphus::Proto::HTTP;
 use AnyEvent::Strict;
-use PCREHTTPD;
+use PCREHTTPD::PCREHTTPD;
 
 BEGIN {
 	if ($#ARGV < 0) {
