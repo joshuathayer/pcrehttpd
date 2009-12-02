@@ -2,8 +2,6 @@ package PCREUser;
 use strict;
 use Data::Dumper;
 
-use lib ('/Users/joshua/projects/mykeyv/lib/');
-
 =head1 NAME
 
 PCREUser - a user class for the PCREHTTPD web application server

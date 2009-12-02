@@ -6,9 +6,6 @@ package PCREHTTPD;
 
 use strict;
 use base 'Sisyphus::Application';
-use lib ('/Users/joshua/projects/sisyphus/lib/');
-use lib ('/Users/joshua/projects/mykeyv/lib/');
-use lib ('/Users/joshua/projects/pcrehttpd/admin/web/');
 
 use Data::Dumper;
 use AnyEvent;
@@ -16,7 +13,7 @@ use URI;
 use Fcntl;
 use Sislog;
 use MyKVClient;
-use PCREUser;
+use PCREHTTPD::PCREUser;
 use PCREAdminApp;
 
 use Time::HiRes;
@@ -45,7 +42,7 @@ sub new {
 		cluster_state => $Config::cluster_state,
 	});
 
-	$PCREUser::kvc = $self->{kvc};
+	$PCREHTTPD::PCREUser::kvc = $self->{kvc};
 
 	# "routing" regex
 	$self->{re} = $re;
@@ -281,7 +278,7 @@ sub pcre_admin {
 		
 		# this should be a sub.
 		if ($newUser && $newPass) {
-			my $u = PCREUser->new;
+			my $u = PCREHTTPD::PCREUser->new;
 			$u->setToken($newUser);
 			$a = PasswordAuth->new;
 			$a->setToken($newUser);
@@ -320,7 +317,7 @@ sub pcre_admin_no_user {
 	my $password= $context->{params}->{pass};
 
 	if ($username) {
-		PCREUser->new($username, sub {
+		PCREHTTPD::PCREUser->new($username, sub {
 			my $u = shift;
 			# need a more general-case authentication checking scheme.
 			# it's insane to write this code here.
@@ -352,7 +349,7 @@ sub pcre_admin_no_user {
 
 sub getUser {
 	my ($self, $u, $cb) = @_;
-	PCREUser->new($u->{token}, $cb);
+	PCREHTTPD::PCREUser->new($u->{token}, $cb);
 }
 
 sub setUser {
