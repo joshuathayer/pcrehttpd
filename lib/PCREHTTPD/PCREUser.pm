@@ -1,4 +1,4 @@
-package PCREUser;
+package PCREHTTPD::PCREUser;
 use strict;
 use Data::Dumper;
 

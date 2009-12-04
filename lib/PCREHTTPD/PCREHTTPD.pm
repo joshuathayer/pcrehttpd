@@ -1,4 +1,4 @@
-package PCREHTTPD;
+package PCREHTTPD::PCREHTTPD;
 
 # this is a Sisyphus Application.
 # An HTTPD where url->method routing is taken care of by a config file
@@ -12,17 +12,14 @@ use AnyEvent;
 use URI;
 use Fcntl;
 use Sislog;
-use MyKVClient;
+use Mykeyv::MyKVClient;
 use PCREHTTPD::PCREUser;
-use PCREAdminApp;
+use PCREHTTPD::PCREAdminApp;
 
 use Time::HiRes;
 use constant INTERNAL_SESSION_TIMEOUT_SEC => 60*60*24;
 
 my $responses;
-
-my $kv_config = "./kvcluster.conf";
-require $kv_config;
 
 sub new {
 	my $class = shift;
@@ -32,11 +29,14 @@ sub new {
 	my $httplog = shift;
 	my $applog = shift;
 	my $appargs = shift;	# a ref to pass to the app at instantiation
+	my $kv_config = shift;
+
+	require $kv_config;
 
 	my $self = { };
 
 	# connection to db cluster
-	$self->{kvc} = MyKVClient->new({
+	$self->{kvc} = Mykeyv::MyKVClient->new({
 		cluster => $Config::cluster,
 		pending_cluster => $Config::pending_cluster,
 		cluster_state => $Config::cluster_state,
@@ -62,7 +62,7 @@ sub new {
 	$self->{sessions} = {};
 
 	# instantiate admin app 
-	$self->{adminappinstance} = PCREAdminApp->new();
+	$self->{adminappinstance} = PCREHTTPD::PCREAdminApp->new();
 
 	bless($self, $class);
 
@@ -148,7 +148,7 @@ sub message {
 		my ($m, $instance);
 		if ($f =~ "pcre_admin") {
 			print "ADMIN $f\n";
-			$m = "PCREAdminApp::$f";
+			$m = "PCREHTTPD::PCREAdminApp::$f";
 			$instance = $self->{adminappinstance};
 		} else {
 			$m = $self->{mod} . "::" . $f;

@@ -8,8 +8,8 @@ use AnyEvent::Strict;
 use PCREHTTPD::PCREHTTPD;
 
 BEGIN {
-	if ($#ARGV < 0) {
-		print "Usage: $0 PATH_TO_CONFFILE\n";
+	if ($#ARGV < 1) {
+		print "Usage: $0 PATH_TO_CONFFILE PATH_TO_KV_CONFFILE\n";
 		exit;
 	}
 }
@@ -17,6 +17,8 @@ BEGIN {
 # import PCREConfig namespace
 my $confPath = $ARGV[0];
 require $confPath;
+
+my $kv_conf = $ARGV[1];
 
 # logging
 my $applog = Sislog->new({use_syslog=>1, facility=>$PCREConfig::applog});
@@ -29,11 +31,13 @@ my $listener = new Sisyphus::Listener;
 $listener->{port} = $PCREConfig::port;
 $listener->{ip} = $PCREConfig::ip;
 $listener->{protocol} = "Sisyphus::Proto::HTTP";
-$listener->{application} = PCREHTTPD->new(
+$listener->{application} = PCREHTTPD::PCREHTTPD->new(
 	$PCREConfig::module,
 	$PCREConfig::re,
 	$httplog,
 	$applog,
+	undef,
+	$kv_conf,
 );
 $listener->listen();
 

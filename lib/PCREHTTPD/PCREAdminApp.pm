@@ -1,8 +1,10 @@
-package PCREAdminApp;
+package PCREHTTPD::PCREAdminApp;
 use strict;
 use File::Find;
 use Cwd;
 use Data::Dumper;
+use File::ShareDir;
+use AWP::Parser;
 
 sub staticTree {
 	my $dir = shift;
@@ -33,15 +35,18 @@ sub new {
 
 	my $self = {};
 
+	my $dir = File::ShareDir::dist_dir('pcrehttpd');
+
+
 	my $p = AWP::Parser->new();
-	$p->includeMods("/Users/joshua/projects/pcrehttpd/admin/web/mods");
-	$p->parsefile("/Users/joshua/projects/pcrehttpd/admin/web/templates/index.xhtml");
+	$p->includeMods("$dir/mods");
+	$p->parsefile("$dir/templates/index.xhtml");
 	$self->{templates}->{index} = $p;
 
 	# ok static tree.
 	# this should be a parent class method
 	# this should also set up subs, so we don't have to write subs like "css", below
-	$self->{static} = staticTree("/Users/joshua/projects/pcrehttpd/admin/web/pcre_admin_static");
+	$self->{static} = staticTree("$dir/pcre_admin_static");
 	# and in fact, we don't want to write things like "index" below, either... parsing
 	# the tree should add methods to our classes
 
@@ -50,19 +55,21 @@ sub new {
 }
 
 sub pcre_admin_static {
-	my ($self, $context, $cb, $logcb) = @_;
+	my ($self, $context) = @_;
 	my $u = $context->{url};
 	my ($p) = $u =~ /pcre_admin_static\/(.*)$/;
 	my $c = $self->{static}->{$p};
 
-	$cb->(200, "OK", {"content->type" => "text/css"}, $c);
+	$context->{_pcrehttpd_cb}->(200, "OK", {"content->type" => "text/css"}, $c);
 }
 
 sub pcre_admin {
-	my ($self, $context, $cb, $logcb) = @_;
-	my $out = $self->{templates}->{index}->walk($context);
+	my ($self, $context) = @_;
+	$self->{templates}->{'index'}->walk($context, {}, sub {
+		my ($dat) = @_;
+		$context->{_pcrehttpd_cb}->(200, "OK", {"content-type" => "text/html"}, $dat);
+	});
 
-	$cb->(200, "OK", {"content-type" => "text/html"}, $out);
 }
 
 1;
