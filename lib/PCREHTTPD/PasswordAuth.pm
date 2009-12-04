@@ -1,4 +1,4 @@
-package PasswordAuth;
+package PCREHTTPD::PasswordAuth;
 
 sub new {
 	my $this = shift;
