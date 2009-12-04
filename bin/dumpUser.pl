@@ -10,24 +10,24 @@ if (scalar(@ARGV) < 2) {
 }
 
 use PCREHTTPD::PCREUser; 
-use MyKVClient;
+use Mykeyv::MyKVClient;
 use PCREHTTPD::PasswordAuth;
 use Data::Dumper;
 use AnyEvent;
 
 require $ARGV[0];
 
-my $kvc = MyKVClient->new({
+my $kvc = Mykeyv::MyKVClient->new({
 	cluster => $Config::cluster,
 	pending_cluster => $Config::pending_cluster,
 	cluster_state => $Config::cluster_state,
 });
 
-$PCREUser::kvc = $kvc;
+$PCREHTTPD::PCREUser::kvc = $kvc;
 
 my $cv = AnyEvent->condvar;
 $cv->begin;
-my $u = PCREUser->new($ARGV[1], sub {
+my $u = PCREHTTPD::PCREUser->new($ARGV[1], sub {
 	my $u = shift; 
 
 	unless ($u) {

@@ -8,8 +8,8 @@ use AnyEvent::Strict;
 use PCREHTTPD::PCREHTTPD;
 
 BEGIN {
-	if ($#ARGV < 1) {
-		print "Usage: $0 PATH_TO_CONFFILE PATH_TO_KV_CONFFILE\n";
+	if ($#ARGV < 0) {
+		print "Usage: $0 PATH_TO_CONFFILE\n";
 		exit;
 	}
 }
@@ -37,7 +37,7 @@ $listener->{application} = PCREHTTPD::PCREHTTPD->new(
 	$httplog,
 	$applog,
 	undef,
-	$kv_conf,
+	$PCREConfig::kv_conf,
 );
 $listener->listen();
 
