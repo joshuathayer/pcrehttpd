@@ -31,7 +31,7 @@ my $u = PCREHTTPD::PCREUser->new;
 $u->setToken($ARGV[1]);
 
 my $a = PCREHTTPD::PasswordAuth->new();
-$a->setToken($ARGV[1]);
+$a->setToken($ARGV[1]); # Token is username
 $a->setPassword($ARGV[2]);
 
 $u->setAuthentication($a);
