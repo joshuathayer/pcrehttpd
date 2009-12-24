@@ -49,8 +49,10 @@ sub new {
 		my $cb = shift;
 		$self = fromToken($tok, sub {
 			$self = shift;
-			bless($self, $class);
-			$cb->($self);
+			unless ($self) { $cb->(undef) } else {
+				bless($self, $class);
+				$cb->($self);
+			}
 		});
 	} else {
 		

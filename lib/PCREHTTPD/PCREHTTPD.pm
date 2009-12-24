@@ -75,6 +75,7 @@ sub new_connection {
 
 sub remote_closed {
 	my ($self, $host, $port, $fh) = @_;
+	$self->{applog}->log("remoted closed");
 	delete $responses->{$fh};
 }
 
@@ -90,6 +91,7 @@ sub message {
 	my $url= $req->url(); # this won't have GET params
 	my %params = $req->vars();
 	my $headers = $req->headers();
+
 	# AE::HTTPD::Request does not seem to have a method to retrieve GET params
 	# so we will do that here. lame... TODO submit patch?
 	# this sucks because it bypasses the Request object's accessor to get to the
@@ -102,8 +104,6 @@ sub message {
 
 	# server-internal sessioning
 	# cookie parsing. please put this in its own lib
-	#print "client -> server\n";
-	#print Dumper $headers;
 	my $cookies;
 	if ($headers->{cookie}) {
 		my @f = split(/;\s*/, $headers->{cookie});
@@ -115,7 +115,6 @@ sub message {
 	}
 
 	my $sessionID = $cookies->{PCRESESSION};
-	#print "sessionID $sessionID\n";
 
 	my $f;
 
@@ -127,7 +126,6 @@ sub message {
 		} else {
 			$f = "pcre_admin";
 		}
-		print "f $f\n";
 	} else {
 		foreach my $r (@{$self->{re}}) {
 			if ($url->as_string() =~ /$r->[0]/) {
