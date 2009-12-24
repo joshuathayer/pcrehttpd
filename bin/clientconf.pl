@@ -1,5 +1,6 @@
 package Config;
 
+# This is the kvd config file
 # the cluster, that the client sees
 
 $cluster_state = "normal";
