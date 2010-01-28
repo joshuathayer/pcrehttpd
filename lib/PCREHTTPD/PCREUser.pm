@@ -49,13 +49,14 @@ sub new {
 		my $cb = shift;
 		$self = fromToken($tok, sub {
 			$self = shift;
-			unless ($self) { $cb->(undef) } else {
+			#print "in PCREUser, trying to recover user, got:\n";
+			#print Dumper $self;
+			unless (defined($self)) { $cb->(undef) } else {
 				bless($self, $class);
 				$cb->($self);
 			}
 		});
 	} else {
-		
 		my $self= {};
 
 		$self->{token} = undef;
@@ -88,6 +89,8 @@ sub fromToken {
 	
 	$kvc->get($token, sub {
 		my $result = shift;
+		#print "in fromToken, result is\n";
+		#print Dumper $result;
 		# $result is a get result, not a user object 
 		# so...	
 		my $u = $result->{data};

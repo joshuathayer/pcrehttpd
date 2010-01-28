@@ -74,13 +74,13 @@ sub new_connection {
 }
 
 sub remote_closed {
-	my ($self, $host, $port, $fh) = @_;
-	$self->{applog}->log("remoted closed");
-	delete $responses->{$fh};
+	my ($self, $host, $port, $cid) = @_;
+	$self->{applog}->log("remoted closed $cid");
+	delete $responses->{$cid};
 }
 
 sub message {
-	my ($self, $host, $port, $dat, $fh) = @_;
+	my ($self, $host, $port, $dat, $cid) = @_;
 
 	my $req = $dat->[0];
 
@@ -137,11 +137,11 @@ sub message {
 
 	unless ($f) {
 			my $cont = "404 notfound bro";
-			$self->{httplog}->log($fh, "$host $meth " .
+			$self->{httplog}->log($cid, "$host $meth " .
 			    $url->as_string() . " -> ?? 404 " . length($cont));
-			$responses->{$fh} =
+			$responses->{$cid} =
 				[404, "NOT_FOUND", {"Content-type" => "text/html",}, $cont];
-			$self->{client_callback}->([$fh]);	
+			$self->{client_callback}->([$cid]);	
 	} else {
 		my ($m, $instance);
 		if ($f =~ "pcre_admin") {
@@ -195,14 +195,14 @@ sub message {
 						$headers->{'Set-Cookie'} = "PCRESESSION=\"$sessionID\";";
 					}
 
-					$responses->{$fh} = [$code, $str, $headers, $cont];
-					$self->{client_callback}->([$fh]);	
+					$responses->{$cid} = [$code, $str, $headers, $cont];
+					$self->{client_callback}->([$cid]);	
 				};
 
 				$context->{_pcrehttpd_app_log} = sub {
 					# logging callback for our app
 					my $dat = shift;
-					$self->{applog}->log($fh, $dat);
+					$self->{applog}->log($cid, $dat);
 				};
 
 				# actually make the call
@@ -217,24 +217,24 @@ sub message {
 				my $errm = "$! - $@";
 				undef $!; undef $@;
 				$cont = "Alas. It seems as though we found a server error.";
-				$responses->{$fh} =
+				$responses->{$cid} =
 					[500, "ERROR", {"Content-type" => "text/html",}, $cont];
-				$self->{httplog}->log($fh, "$host $meth " .
+				$self->{httplog}->log($cid, "$host $meth " .
 				    $url->as_string() . " -> $m 500 " . length($cont) . " $errm");
-				$self->{client_callback}->([$fh]);	
+				$self->{client_callback}->([$cid]);	
 			} else {
 				# woo. a message from our application	
-				$self->{httplog}->log($fh, "$host $meth " .
+				$self->{httplog}->log($cid, "$host $meth " .
 				     $url->as_string() . " -> $m $code " . length($cont));
 			}
 
 		} else {
 			my $cont = "404 notfound bro";
-			$self->{httplog}->log($fh, "$host $meth " .
+			$self->{httplog}->log($cid, "$host $meth " .
 			    $url->as_string() . " -> ??? 404 " . length($cont));
-			$responses->{$fh} =
+			$responses->{$cid} =
 				[404, "NOT_FOUND", {"Content-type" => "text/html",}, $cont];
-			$self->{client_callback}->([$fh]);	
+			$self->{client_callback}->([$cid]);	
 		}
 
 		return undef;
@@ -389,11 +389,11 @@ sub generateSessionID {
 }
 
 sub get_data {
-	my ($self, $fh) = @_;
+	my ($self, $cid) = @_;
 
-	unless ($responses->{$fh}) { return; }
-	my $v = $responses->{$fh};
-	$responses->{$fh} = undef;
+	unless ($responses->{$cid}) { return; }
+	my $v = $responses->{$cid};
+	$responses->{$cid} = undef;
 	return $v;
 }
 
