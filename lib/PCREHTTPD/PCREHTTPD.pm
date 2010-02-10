@@ -1,8 +1,9 @@
 package PCREHTTPD::PCREHTTPD;
 
 # this is a Sisyphus Application.
-# An HTTPD where url->method routing is taken care of by a config file
-# that is simply a regular expression, which maps URLs to methods
+
+# An HTTPD where url->method routing is represented by a user-provided,
+# regular expression-based map
 
 use strict;
 use base 'Sisyphus::Application';
@@ -44,7 +45,7 @@ sub new {
 
 	$PCREHTTPD::PCREUser::kvc = $self->{kvc};
 
-	# "routing" regex
+	# routing regex
 	$self->{re} = $re;
 	# module that has runnable functions
 	$self->{mod} = $mod;
@@ -55,7 +56,14 @@ sub new {
 
 	$self->{applog}->log("internal", "PCREHTTPD starting up");
 
-	$self->{appinstance} = $mod->new($appargs);
+	my @methods = map($_->[1], @{$self->{re}});
+
+	$self->{appinstance} = $mod->new({
+		appargs => $appargs,
+		methods => \@methods,
+		applog  => $applog,
+	});
+
 	$self->{space} = ['A'..'Z','a'..'z',0..9];
 
 	# session class, and session container class, should be their own things
