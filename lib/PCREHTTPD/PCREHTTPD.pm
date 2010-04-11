@@ -374,6 +374,18 @@ sub getUser {
 #);
 #}
 
+sub associateUserWithSession {
+    my ($self, $user, $session) = @_;
+    $session->{_pcre_user} = $user;
+    return 1;
+}
+
+sub dissociateUserWithSession {
+    my ($self, $session) = @_;
+    delete $session->{_pcre_user};
+    return 1;
+}
+
 sub getSession {
 	my ($self, $sid) = @_;
 
