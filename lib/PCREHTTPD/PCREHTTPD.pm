@@ -265,7 +265,7 @@ sub pcre_admin {
 	}
 
 	# we re-get user just in case
-	$self->getUser($context->{pcre_session}->{_pcre_user}, sub {
+	PCREHTTPD::PCREUser->new($context->{pcre_session}->{_pcre_user}->{token}, sub {
 		my $user = shift;
 
 		my $action = $context->{params}->{action};
@@ -358,19 +358,21 @@ sub getUser {
 	PCREHTTPD::PCREUser->new($u->{token}, $cb);
 }
 
-sub setUser {
-	my ($self, $user, $cb) = @_;
-	print "setUser!\n";
-	#print Dumper $user;
+#sub setUser {
+#	my ($self, $user, $cb) = @_;
+#
+#	$self->{users}->{ $user->{token} } = $user;
+#	my $id = $user->{user_id};
 
-	$self->{users}->{ $user->{token} } = $user;
-	my $id = $user->{user_id};
-
-	my $cv = AnyEvent->condvar;
-	$self->{kvc}->set("pcrehttpd-user-".$user->{username}, $user, sub {
-		$self->{kvc}->set($id, $user, $cb);
-	});
-}
+#	my $cv = AnyEvent->condvar;
+#	$self->{kvc}->set(
+#		"pcrehttpd-user-".$user->{username},
+#		$user,
+#		sub {
+#			$self->{kvc}->set($id, $user, $cb);
+#		}
+#);
+#}
 
 sub getSession {
 	my ($self, $sid) = @_;

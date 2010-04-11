@@ -49,8 +49,6 @@ sub new {
 		my $cb = shift;
 		$self = fromToken($tok, sub {
 			$self = shift;
-			#print "in PCREUser, trying to recover user, got:\n";
-			#print Dumper $self;
 			unless (defined($self)) { $cb->(undef) } else {
 				bless($self, $class);
 				$cb->($self);
@@ -89,8 +87,17 @@ sub fromToken {
 	
 	$kvc->get($token, sub {
 		my $result = shift;
-		#print "in fromToken, result is\n";
-		#print Dumper $result;
+
+		if ($result->{command} eq "get_notfound") {
+			$cb->(undef);
+			return;
+		}
+
+		if (not ($result->{command} eq "get_ok")) {
+			print "got an error from kvd: $result->{command}\n";
+			die("kvd_error");
+		}
+
 		# $result is a get result, not a user object 
 		# so...	
 		my $u = $result->{data};
@@ -143,21 +150,19 @@ sub store {
 
 	# probably going to stick this into a number of indexes as well
 	$kvc->set(
+
 		"pcrehttpd-user-".$self->{token},
 		$self,
-		sub { $cb->(); }
+		sub {
+			my $r = shift;
+			if (not ($r->{command} eq "set_ok")) {
+				print STDERR "kvd error: kvd did not return set_ok in PCREUser::store: $r->{command}\n";
+				die("kvd_error");
+			}
+	   		$cb->();
+		}
 	);
 
 }
-
-# actually no. class users should just set the class variable directly
-# allow another app (pcrehttpd) to give us a kvd client instance to use.
-#sub setKVC {
-#	my ($self, $lkvc) = @_;
-
-#	# this might need to get a lot more complex. do we really want
-#	# to be able to re-set our kvc mid-flight?
-#	$kvc = $lkvc;
-#}
 
 1;
