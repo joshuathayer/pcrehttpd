@@ -61,6 +61,7 @@ sub new {
 		$self->{createDate} = time;
 		$self->{modifiedDate} = time;
 		$self->{active} = 1;
+        $self->{email} = undef;
 	
 		# a hash of arrays of names of "grants" this user has.
 		# applications maintain this... so something like
