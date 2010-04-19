@@ -36,14 +36,16 @@ sub new {
 
 	my $self = { };
 
-	# connection to db cluster
-	$self->{kvc} = Mykeyv::MyKVClient->new({
-		cluster => $Config::cluster,
-		pending_cluster => $Config::pending_cluster,
-		cluster_state => $Config::cluster_state,
-	});
-
-	$PCREHTTPD::PCREUser::kvc = $self->{kvc};
+	# connection to db cluster, if defined.
+    # apps not using PCREUsers don't need to set kvd config
+    if (defined $Config::cluster) { 
+	    $self->{kvc} = Mykeyv::MyKVClient->new({
+	    	cluster => $Config::cluster,
+	    	pending_cluster => $Config::pending_cluster,
+	    	cluster_state => $Config::cluster_state,
+	    });
+    }
+    $PCREHTTPD::PCREUser::kvc = $self->{kvc};
 
 	# routing regex
 	$self->{re} = $re;
